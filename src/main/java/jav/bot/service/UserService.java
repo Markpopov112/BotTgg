@@ -1,6 +1,5 @@
-package service;
+package jav.bot.service;
 
-import java.util.Objects;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -10,11 +9,11 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import entity.Role;
-import entity.User;
-import entity.UserRole;
-import repository.UserRepository;
-import repository.UserRoleRepository;
+import jav.bot.entity.Role;
+import jav.bot.entity.User;
+import jav.bot.entity.UserRole;
+import jav.bot.repository.UserRepository;
+import jav.bot.repository.UserRoleRepository;
 
 @Service
 public class UserService implements UserDetailsService {
@@ -29,22 +28,23 @@ public class UserService implements UserDetailsService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return (UserDetails)this.userRepository.findByUsername(username).orElseThrow(() -> {
-            return new UsernameNotFoundException(username);
+        return this.userRepository.findByUsername(username).orElseThrow(() -> {
+            throw new UsernameNotFoundException(username);
         });
     }
 
     @Transactional
     public User registerNewUser(User user) {
         user.setPassword(this.passwordEncoder.encode(user.getPassword()));
-        return (User)this.userRepository.save(user);
+        return this.userRepository.save(user);
     }
 
     @Transactional
     public void assignRoleToUser(Long userId, String roleName) {
-        User user = (User)this.userRepository.findById(userId).orElseThrow(() -> {
-            return new IllegalArgumentException("User not found");
+        User user = this.userRepository.findById(userId).orElseThrow(() -> {
+            throw new IllegalArgumentException("User not found");
         });
         UserRole userRole = new UserRole();
         userRole.setUser(user);
@@ -54,14 +54,10 @@ public class UserService implements UserDetailsService {
 
     @Transactional
     public void removeRoleFromUser(Long userId, String roleName) {
-        User user = (User)this.userRepository.findById(userId).orElseThrow(() -> {
-            return new IllegalArgumentException("User not found");
+        User user = this.userRepository.findById(userId).orElseThrow(() -> {
+            throw new IllegalArgumentException("User not found");
         });
-        Optional<UserRole> userRole = user.getUserRoles().stream().filter((role) -> {
-            return role.getRole().name().equals(roleName);
-        }).findFirst();
-        UserRoleRepository var10001 = this.userRoleRepository;
-        Objects.requireNonNull(var10001);
-        userRole.ifPresent(var10001::delete);
+        Optional<UserRole> userRole = user.getUserRoles().stream().filter(role -> role.getRole().name().equals(roleName)).findFirst();
+        userRole.ifPresent(this.userRoleRepository::delete);
     }
 }

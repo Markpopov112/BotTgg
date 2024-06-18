@@ -1,4 +1,4 @@
-package controller;
+package jav.bot.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import entity.User;
-import service.UserService;
+import jav.bot.entity.User;
+import jav.bot.service.UserService;
 
 @Controller
 @RequestMapping({"/users"})

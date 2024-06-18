@@ -1,4 +1,4 @@
-package entity;
+package jav.bot.entity;
 
 public enum Role {
     ROLE_ADMIN,
